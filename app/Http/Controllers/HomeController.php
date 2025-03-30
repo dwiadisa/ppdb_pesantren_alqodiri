@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\ContentAlurPendaftaran;
 use App\Models\ContentAlurPenyerahan;
 use App\Models\ContentImageInformasi;
@@ -10,7 +9,10 @@ use App\Models\ContentInformasiPelayanan;
 use App\Models\ContentSyaratPendaftaran;
 use App\Models\ContentWeb;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\View\View;
+use SEOMeta;
+use OpenGraph;
 
 class HomeController extends Controller
 {
@@ -19,6 +21,19 @@ class HomeController extends Controller
      */
     public function index(): View
     {
+        // SEO Configuration
+        SEOMeta::setTitle('PSB Pondok Pesantren Al-Qodiri Jember');
+        SEOMeta::setDescription('Website Resmi Penerimaan Santri Baru Pondok Pesantren Al-Qodiri Jember');
+        SEOMeta::addKeyword(['Pondok Pesantren Al-Qodiri', 'Pendaftaran Santri Baru', 'Pesantren Jember', 'Pendidikan Islam']);
+
+        OpenGraph::setTitle('PSB Pondok Pesantren Al-Qodiri Jember');
+        OpenGraph::setDescription('Website Resmi Penerimaan Santri Baru');
+        OpenGraph::setUrl(url()->current());
+        OpenGraph::addProperty('type', 'website');
+        OpenGraph::addImage(asset('assets/images/img/logo_aqj.png'));
+
+
+
         $dataGeneral = ContentWeb::first();
         $dataAlurPendaftaran = ContentAlurPendaftaran::getAllDataAlurPendaftaran();
         $dataSyaratPendaftaran = ContentSyaratPendaftaran::getAllDataSyaratPendaftaran();

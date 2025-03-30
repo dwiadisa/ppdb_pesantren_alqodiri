@@ -7,6 +7,10 @@ use App\Http\Controllers\ManagementContent;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthenticateController;
 use App\Http\Controllers\DashboardSantriController;
+use Spatie\Sitemap\Sitemap;
+use Spatie\Sitemap\Tags\Url;
+use Carbon\Carbon;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -22,7 +26,7 @@ use App\Http\Controllers\DashboardSantriController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-Route::get('/', [HomeController::class, 'index']);
+Route::get('/', [HomeController::class, 'index'])->name('home_page');
 Route::get('/register', [AuthenticateController::class, 'register']);
 Route::post('/register', [AuthenticateController::class, 'register_action']);
 Route::get('/login', [AuthenticateController::class, 'login'])->name('login')->middleware('guest');
@@ -189,4 +193,32 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/getkabupaten', [DashboardSantriController::class, 'getkabupaten'])->name('getkabupaten');
     Route::post('/getkecamatan', [DashboardSantriController::class, 'getkecamatan'])->name('getkecamatan');
     Route::post('/getkelurahan', [DashboardSantriController::class, 'getkelurahan'])->name('getkelurahan');
+});
+
+Route::get('/sitemap.xml', function () {
+    $sitemap = Sitemap::create()
+        // Halaman Utama
+        ->add(Url::create(route('home_page'))
+            ->setLastModificationDate(Carbon::now())
+            ->setChangeFrequency(Url::CHANGE_FREQUENCY_DAILY)
+            ->setPriority(0.8));
+
+    return $sitemap->toResponse(request()); // Tambahkan request() sebagai argument
+});
+Route::get('/robots.txt', function () {
+    $content = implode("\n", [
+        "User-agent: *",
+        "Disallow: /admin/",
+        "Disallow: /login/",
+        "Disallow: /dashboard/",
+        "Allow: /img/",
+        "Allow: /css/",
+        "Allow: /js/",
+        "",
+        "Sitemap: " . url('/sitemap.xml'),
+        "Host: " . config('app.url')
+    ]);
+
+    return Response::make($content)
+        ->header('Content-Type', 'text/plain');
 });
